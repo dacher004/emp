@@ -417,18 +417,43 @@ private function getPendingRequests($query)
 
         //delete employee
 
+        // public function deleteemp()
+		// {
+		//     if (isset($_GET['deleteId'])) {
+        //         $requestId = $_GET['deleteId'];
+        //         $query = "DELETE FROM list WHERE ID = ?";
+        //         $stmt = $this->con->prepare($query);
+        //         $stmt->bind_param("s", $requestId);
+        //         $stmt->execute();
+			
+		//     }
+			
+		// }
+
         public function deleteemp()
-		{
-		    if (isset($_GET['deleteId'])) {
-                $requestId = $_GET['deleteId'];
-                $query = "DELETE FROM list WHERE ID = ?";
-                $stmt = $this->con->prepare($query);
-                $stmt->bind_param("s", $requestId);
-                $stmt->execute();
-			
-		    }
-			
-		}
+{
+    if (isset($_GET['deleteId'])) {
+        $requestId = $_GET['deleteId'];
+
+        // Check if important column value is 1
+        $checkQuery = "SELECT important FROM list WHERE ID = ?";
+        $checkStmt = $this->con->prepare($checkQuery);
+        $checkStmt->bind_param("s", $requestId);
+        $checkStmt->execute();
+        $checkResult = $checkStmt->get_result();
+        $row = $checkResult->fetch_assoc();
+
+        if ($row['important'] == 1) {
+            echo "Cannot delete super admin account.";
+        } else {
+            $deleteQuery = "DELETE FROM list WHERE ID = ?";
+            $deleteStmt = $this->con->prepare($deleteQuery);
+            $deleteStmt->bind_param("s", $requestId);
+            $deleteStmt->execute();
+            echo "Item deleted successfully.";
+        }
+    }
+}
 
             //edit employee record
         public function editemp($postData)
